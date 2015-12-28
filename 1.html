@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>D3 Charts</title>
+    <!-- <script type="text/javascript" src="./d3/d3.min.js">  </script> -->
+    <meta charset="utf-8">
+    <style>
+
+    .bar {
+      fill: steelblue;
+    }
+
+    .bar:hover {
+      fill: brown;
+    }
+
+    .axis {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .x.axis path {
+      display: none;
+    }
+  #content
+  {
+    overflow-x: auto;
+  }
+  .d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" type="image/png" href="./includes/img/favicon.png" />
+    <!-- Bootstrap CSS -->
+    <link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <script src="./includes/js/modernizr-2.6.2.min.js"></script>
+      <script src="includes/js/script.js"></script>
+  </head>
+    <body>
+<br>
+      <!-- container fluid ends -->
+      <div class="container-fluid" id="mainContentWrapper">
+            <div class="container-fluid text-center" >
+              <ul class="list-inline">
+              <li><a href="1.html" class="btn btn-primary">1</a></li>
+              <li><a href="2.html" class="btn btn-default">2</a></li>
+              <li><a href="3.html" class="btn btn-default">3</a></li>
+              </ul>
+            </div>
+          <div class="row" id="mainContainer">
+            <div class="col-xs-12" >
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">
+                    <h3 class="panel-title">Data for India over the years</h3>
+
+                  </div>
+                  <div class="panel-heading text-center">
+
+                      <select id="type" onchange="createBarGraph(this.value)">
+                        <option value="landArea">Arable land (% of land area)</option>
+                        <option value="hpp">Arable land (hectares per person)</option>
+                            <option value="hectare">Arable land (hectares)</option>
+                            <option value="africanLandArea">African Arable land (% of land area)</option>
+                      </select>
+                    </div>
+                <!--Headings end  -->
+                <div class="panel-body" id="content"> </div>
+                <!--  panel body ends-->
+            </div>
+            <!-- panel ends -->
+              </div>
+
+          </div>
+      </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+
+
+    <script>
+var fileName="data/finalData/file1.json";
+var targetDiv="#content";
+  var createBarGraph=function(subObject){
+    createBarGraphUsingTemplate(subObject,fileName,targetDiv);
+  }
+createBarGraph("landArea");
+
+
+    </script>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <!-- If no online access, fallback to our hardcoded version of jQuery -->
+    <script>
+        window.jQuery || document.write('<script src="includes/js/jquery-1.8.2.min.js"><\/script>')
+    </script>
+    <!-- Bootstrap JS -->
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
+
+  </body>
+
+</html>
