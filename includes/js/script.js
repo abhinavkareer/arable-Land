@@ -42,7 +42,7 @@ var yAxis = d3.svg.axis()
         });
         svg.call(tip);
   x.domain(data.map(function(d) { return d[xAxisProp]; }));
-  y.domain([0,  Math.ceil(d3.max(data, function(d) { return parseFloat(d[yAxisProp]); }))*1.15]);
+  y.domain([0,  Math.ceil(d3.max(data, function(d) { return parseFloat(d[yAxisProp]); }))]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -58,8 +58,7 @@ var yAxis = d3.svg.axis()
       .attr("y", 10)
       .attr("dy", ".91em")
       .style("text-anchor", "end")
-
-      .text("Crops");
+      .text("");
 
   svg.append("g")
       .attr("class", "y axis")
@@ -69,7 +68,7 @@ var yAxis = d3.svg.axis()
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Ton mn");
+      .text("%");
 
   svg.selectAll(".bar")
       .data(data)

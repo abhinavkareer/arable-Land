@@ -6,7 +6,7 @@ var landArea=[];
 var hpp=[];
 var hectare=[];
 var africanLandArea=[];
-var countryContinentdata=[];
+var countryContinentdata={};
  var countryContinentMap=JSON.parse(fs.readFileSync('finalData/countryContinentMap.json', 'utf8'));
 // console.log(countryContinentMap);
 //var countryContinentMap={};
@@ -106,13 +106,12 @@ var fetchCropName=function(fullName){
 }
 var createCommonTemplate=function(country,initColIndex,line,targetArray)
 {
-
-
       cols=splitCsvRowToCols(line);
     if(checkForKeywords(true,country,line) )
     {
        for (i=initColIndex-1;i<cols.length;i++)
        {
+            if(checkForNA(cols[i]))
            targetArray.push(new populateSingleObj(headers[i],checkForNA(cols[i])));
        }
     }
@@ -152,11 +151,7 @@ var createJsonForFirstAssignment=function()
           //  console.log(countryContinentMap[cols[0]]);
             if(countryContinentMap[cols[0]]!=undefined && countryContinentMap[cols[0]].indexOf("Africa")>=0)
             {
-
-              for (var i = 4; i < cols.length; i++)
-              {
                    africanLandArea.push(new populateSingleObj(cols[0],checkForNA(cols[indexOf2010])));
-              }
             }
          }
 
@@ -168,20 +163,22 @@ var createJsonForFirstAssignment=function()
             continent=countryContinentMap[cols[0]];
             if(continent!=undefined)
             {
-
-
               for (var i = 4; i < cols.length; i++)
               {
-                  // countryContinentdata[headers[i]]=countryContinentdata[headers[i]]||{};
-                  // countryContinentdata[headers[i]][continent]=countryContinentdata[headers[i]][continent]||0;
-                  // countryContinentdata[headers[i]][continent]=countryContinentdata[headers[i]][continent]+parseFloat(checkForNA(cols[i]));
+                   countryContinentdata[headers[i]]=countryContinentdata[headers[i]]||{};
+                   countryContinentdata[headers[i]][continent]=countryContinentdata[headers[i]][continent]||0;
+                   countryContinentdata[headers[i]][continent]=countryContinentdata[headers[i]][continent]+parseFloat(checkForNA(cols[i]));
+          year=headers[i];
 
-
-          year=headers[i-1];
-          arr=countryContinentdata[i];
-          arr=arr||{year:year.substring(year.indexOf("-")+1)};
-          arr[continent]=  (arr[continent]||0)+parseFloat(checkForNA(cols[i]));
-          countryContinentdata[i-5]=arr;
+        //   arr=countryContinentdata[i];
+        //   if(arr==undefined)
+        // {
+        //    arr={year:year.substring(year.indexOf("-")+1)};
+        // }  else {
+        //     arr[continent]=  (arr[continent]||0)+parseFloat(checkForNA(cols[i]));
+        //
+        //   }
+        //   countryContinentdata[i-4]=arr;
 
 
 
@@ -218,7 +215,27 @@ lineReader.on('close', function () {
   // {
   //   tempObj.push({name:myKey[i],countryContinentdata[myKey[i]]});
   // }
-finalObj.countryContinentdata=countryContinentdata;
+  myKey=Object.keys(countryContinentdata);
+  tempArr=[];
+  for(i=0;i<myKey.length;i++)
+  {
+      mySubKey=Object.keys(countryContinentdata[myKey[i]])
+      tempObj={};
+      tempObj.year=myKey[i];
+      flag=false;
+      for(j=0;j<mySubKey.length;j++)
+      {
+        if(countryContinentdata[myKey[i]][mySubKey[j]]!=0)
+        {
+          flag=true;
+        }
+        tempObj[mySubKey[j]]=countryContinentdata[myKey[i]][mySubKey[j]];
+      }
+      if(flag)
+      tempArr.push(tempObj);
+  }
+
+finalObj.countryContinentdata=tempArr;
 
   fs.writeFile(targetFile1,JSON.stringify(finalObj));
 

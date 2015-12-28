@@ -23,16 +23,83 @@ body {
   stroke-width: 1.5px;
 }
 
+#content
+{
+  overflow-x: auto;
+}
+.d3-tip {
+line-height: 1;
+font-weight: bold;
+padding: 12px;
+background: rgba(0, 0, 0, 0.8);
+color: #fff;
+border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+box-sizing: border-box;
+display: inline;
+font-size: 10px;
+width: 100%;
+line-height: 1;
+color: rgba(0, 0, 0, 0.8);
+content: "\25BC";
+position: absolute;
+text-align: center;
+}
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+margin: -1px 0 0 0;
+top: 100%;
+left: 0;
+}
 </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="shortcut icon" type="image/png" href="./includes/img/favicon.png" />
+<!-- Bootstrap CSS -->
+<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<script src="./includes/js/modernizr-2.6.2.min.js"></script>
+</head>
+
 <body>
-<script src="//d3js.org/d3.v3.min.js"></script>
+  <body>
+    <br>
+    <!-- container fluid ends -->
+    <div class="container-fluid" id="mainContentWrapper">
+      <div class="container-fluid text-center" >
+        <ul class="list-inline">
+        <li><a href="1.html" class="btn btn-default">1</a></li>
+        <li><a href="2.html" class="btn btn-primary">2</a></li>
+    </ul>
+      </div>
+        <div class="row" id="mainContainer">
+          <div class="col-xs-12" >
+          <div class="panel panel-default">
+              <div class="panel-heading text-center">
+                  <h3 class="panel-title">Plot (line chart) "Arable land (hectares)" aggregated by continent over the years data is present"</h3>
+
+                </div>
+
+              <!--Headings end  -->
+              <div class="panel-body" id="content"> </div>
+              <!--  panel body ends-->
+          </div>
+          <!-- panel ends -->
+            </div>
+
+        </div>
+
+    </div>
+  <script src="//d3js.org/d3.v3.min.js"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script>
 
-var margin = {top: 20, right: 80, bottom: 30, left: 50},
+var margin = {top: 20, right: 80, bottom: 30, left: 100},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-var parseDate = d3.time.format("%Y%m%d").parse;
+var parseDate = d3.time.format("%Y").parse;
 
 var x = d3.time.scale()
     .range([0, width]);
@@ -51,21 +118,32 @@ var yAxis = d3.svg.axis()
     .orient("left");
 
 var line = d3.svg.line()
-    .interpolate("basis")
+    .interpolate("")
     .x(function(d) { return x(d.year); })
     .y(function(d) { return y(d.temperature); });
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#content").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+
+        return "<strong>"+d.year.getFullYear()+":</strong> <span style='color:red'>" + (d.area) + "</span>";
+      });
+        svg.call(tip);
 d3.json("data/finalData/file1.json", function(error, data) {
   if (error) throw error;
   data=data.countryContinentdata;
 
   color.domain(d3.keys(data[0]).filter(function(key) { return key !== "year"; }));
+  data.forEach(function(d) {
+      d.year = parseDate(d.year);
+    });
   var cities = color.domain().map(function(name) {
     return {
       name: name,
@@ -74,6 +152,7 @@ d3.json("data/finalData/file1.json", function(error, data) {
       })
     };
   });
+  // data.sort(function(a, b) { return b.ages - a.ages; });
 
   x.domain(d3.extent(data, function(d) { return d.year; }));
 
@@ -95,17 +174,21 @@ d3.json("data/finalData/file1.json", function(error, data) {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Temperature (ºF)");
+      .text("Arable Land (Hectares)");
 
   var city = svg.selectAll(".city")
       .data(cities)
     .enter().append("g")
-      .attr("class", "city");
+      .attr("class", "city")
+    ;
+
 
   city.append("path")
       .attr("class", "line")
       .attr("d", function(d) { return line(d.values); })
-      .style("stroke", function(d) { return color(d.name); });
+      .style("stroke", function(d) { return color(d.name)
+
+        ; });
 
   city.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
@@ -113,6 +196,23 @@ d3.json("data/finalData/file1.json", function(error, data) {
       .attr("x", 3)
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
+      var temp=[];
+        cities.forEach(function(d){
+        d.values.forEach(function(c){
+        temp.push({year:c.year,area:c.temperature});
+        });
+        });
+          svg.selectAll("dot")
+          .data(temp)
+          .enter().append("circle")
+          .attr("r",2)
+          .attr("cx",function(d){return x(d.year);})
+          .attr("cy",function(d){return y(d.area);})
+          .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
 });
+
+
+
 
 </script>
